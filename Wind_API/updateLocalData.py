@@ -155,5 +155,5 @@ if __name__ =='__main__':
 #    data_df = getPVDataFromDB()
 #    updatePVData(data_df, time_index = 'tradeday', code_index = 'security_id')
     updateValidData()
-#    industryData_df = getIndustryFilesFromDB()test
+#    industryData_df = getIndustryFilesFromDB()testtestsd
 	#
