@@ -156,4 +156,5 @@ if __name__ =='__main__':
 #    updatePVData(data_df, time_index = 'tradeday', code_index = 'security_id')
     updateValidData()
 #    industryData_df = getIndustryFilesFromDB()testtestsd
+#sdf
 	#
