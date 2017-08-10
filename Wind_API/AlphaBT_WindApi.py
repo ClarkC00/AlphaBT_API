@@ -16,7 +16,7 @@ class AlphaBT_WindApi(object):
     def __init__(self):
         w.start()
         
-        self.OutputDir = r'F:\Quant\AlphaBT\TempData'
+        self.OutputDir = r'F:\Quant\AlphaBT\TempData\WindData_bfq'
         
         
     def getCurrentTime(self):
@@ -28,8 +28,8 @@ class AlphaBT_WindApi(object):
         
         curr_date = self.getCurrentTime
         
-        start_date = '2011-01-01'
-        end_date = '2017-08-09'
+        start_date = '2017-01-01'
+        end_date = '2017-12-31'
         
         
         stockCodes=w.wset("sectorconstituent","date="+end_date+";sectorid=a001010100000000;field=wind_code")
@@ -37,16 +37,33 @@ class AlphaBT_WindApi(object):
         stockCodeList = stockCodes.Data[0]
         
 #        varList = ['open', 'high', 'low', 'close']
-        varList = ['pre_close','open','high','low','close','volume','amt',
-                   'dealnum','chg,pct_chg','swing','vwap','adjfactor','close2',
+#'pre_close','open','high','low','close','volume','amt', 'dealnum',
+        varList = ['chg','pct_chg','swing','vwap','adjfactor','close2',
                    'turn','free_turn','lastradeday_s','last_trade_day',
                    'rel_ipo_chg','rel_ipo_pct_chg','trade_status','susp_reason',
                    'close3']
-        
+#        self.getWindSingleData('adjfactor', start_date, end_date, stockCodeList)
         for var in varList:
-            self.getWindSingleData(var, start_date, end_date, stockCodeList)
+            print(var)
+            data_df = None
+            
+            for iYear in range(2011,2017+1):
+                time.sleep(5)
+                print(iYear)
+                start_date = str(iYear) + '-01-01'
+                end_date = str(iYear) + '-12-31'
+                df_temp = self.getWindSingleData(var, start_date, end_date, stockCodeList)
+                
+                if data_df is None:
+                    data_df = df_temp
+                else:
+                    data_df = pd.concat([data_df,df_temp])
+                        
 
-
+            fileName = var + '.csv'
+            filePath = os.path.join(self.OutputDir, fileName)
+            data_df.to_csv(filePath, header = True)
+            
     def getWindSingleData(self, varName, start_date, end_date, stockCodeList):
         
         temp = w.wsd(stockCodeList, varName, start_date, end_date, "")
@@ -55,10 +72,14 @@ class AlphaBT_WindApi(object):
 
         data_df = pd.DataFrame(data,index=stockCodeList,columns=temp.Times).T
         
-        fileName = varName + '.csv'
-        filePath = os.path.join(self.OutputDir, fileName)
-        data_df.to_csv(filePath, header = True)
-    
+        return data_df
+
+
+
+# =============================================================================
+#  data processing for alphaBT
+# =============================================================================
+    def 
     
     
 if __name__ =='__main__':
