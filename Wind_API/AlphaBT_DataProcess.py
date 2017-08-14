@@ -152,11 +152,11 @@ class DataProcess_Wind(object):
         
         stockCode = pd.DataFrame(data =[], index = opens.index, columns = ['stockCode'])
         
-        filePath = os.path.join(self.InputDir, 'stockCode' + '.csv')
+        filePath = os.path.join(self.OutputDir, 'stockCode' + '.csv')
         stockCode.to_csv(filePath)
         
         trade_date_data = pd.DataFrame(data = opens.index, columns = ['tradeDay'])
-        filePath = os.path.join(self.InputDir, 'trade_date_data' + '.csv')
+        filePath = os.path.join(self.OutputDir, 'trade_date_data' + '.csv')
         trade_date_data.to_csv(filePath)
     
 if __name__ =='__main__':
