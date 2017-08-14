@@ -11,8 +11,6 @@ import datetime,time
 
 class AlphaBT_WindApi(object):
     
-    
-
     def __init__(self):
         w.start()
         # change this path
@@ -68,14 +66,13 @@ class AlphaBT_WindApi(object):
             
     def getWindSingleData(self, varName, start_date, end_date, stockCodeList):
         
-        temp = w.wsd(stockCodeList, varName, start_date, end_date, "")
+        temp = w.wsd(stockCodeList, varName, start_date, end_date, "") #filled methods = original 
 
         data = temp.Data
 
         data_df = pd.DataFrame(data,index=stockCodeList,columns=temp.Times).T
         
-        return data_df
-
+        return data_df 
 
 
 # =============================================================================
