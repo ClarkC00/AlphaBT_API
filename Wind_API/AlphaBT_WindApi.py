@@ -15,7 +15,7 @@ class AlphaBT_WindApi(object):
 
     def __init__(self):
         w.start()
-        
+        # change this path
         self.OutputDir = r'F:\Quant\AlphaBT\TempData\WindData_bfq'
         
         
@@ -38,16 +38,18 @@ class AlphaBT_WindApi(object):
         
 #        varList = ['open', 'high', 'low', 'close']
 #'pre_close','open','high','low','close','volume','amt', 'dealnum',
-        varList = ['chg','pct_chg','swing','vwap','adjfactor','close2',
-                   'turn','free_turn','lastradeday_s','last_trade_day',
-                   'rel_ipo_chg','rel_ipo_pct_chg','trade_status','susp_reason',
-                   'close3']
+#        varList = ['chg','pct_chg','swing','vwap','adjfactor','close2',
+#                   'turn','free_turn','lastradeday_s','last_trade_day',
+#                   'rel_ipo_chg','rel_ipo_pct_chg','trade_status','susp_reason',
+#                   'close3']
 #        self.getWindSingleData('adjfactor', start_date, end_date, stockCodeList)
+        varList = ['adjfactor']
+        
         for var in varList:
             print(var)
             data_df = None
             
-            for iYear in range(2011,2017+1):
+            for iYear in range(2010,2017+1):
                 time.sleep(5)
                 print(iYear)
                 start_date = str(iYear) + '-01-01'
@@ -79,7 +81,6 @@ class AlphaBT_WindApi(object):
 # =============================================================================
 #  data processing for alphaBT
 # =============================================================================
-    def 
     
     
 if __name__ =='__main__':
