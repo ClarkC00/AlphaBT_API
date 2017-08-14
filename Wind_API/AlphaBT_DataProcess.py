@@ -106,45 +106,81 @@ class DataProcess_Wind(object):
             
         self.generateValid()
         
-    def generateIndustry_temp():
+    def generateIndustry_temp(self):
         
+        
+        print('sw  industry')
         def stockNameTrans(stockNum):
             
             stockNumStr = str(stockNum).zfill(6);
+            
             if stockNumStr > '100000':
                 stockCode = stockNumStr + '.SH'
             else :
                 stockCode = stockNumStr + '.SZ'
                 
             return stockCode
-     
+            
+        
+        opens = temp.readWindCsv('open')
+        tradeDayList = opens.index
+        opens = opens.T
+        data = pd.DataFrame(data = [], index = opens.index)
+        
+        
+        industry = pd.read_csv(r'F:\Quant\AlphaBT\TempData\WindData_bfq\sw_industry2.csv')
+        industry['code'] = industry['code'].apply(stockNameTrans)
+        industry = industry.set_index('code')
         
         
         
-#        filePath = os.path.join(self.InputDir, 'sw_industry2' + '.csv')
-#        industry_df = pd.read_csv()
-#        df = self.readWindCsv('')
-#        VarList = ['sw_industry']
-#        
-#        for varName in VarList:
-#            print(varName)
-#            self.saveToCsv(df, 'returns')
+        for tradeDay in tradeDayList:
+#            print(tradeDay)
+            industry.columns = [tradeDay]
+            data = data.join(industry)
         
+        data = data.T
+        
+        data = data.fillna(-1)
+        
+        self.saveToCsv(data, 'subindustry')
+        self.saveToCsv(data, 'industry_data')
+    
+    def generateVectorData(self):
+        
+        opens = self.readWindCsv('open')
+        
+        stockCode = pd.DataFrame(data =[], index = opens.index, columns = ['stockCode'])
+        
+        filePath = os.path.join(self.InputDir, 'stockCode' + '.csv')
+        stockCode.to_csv(filePath)
+        
+        trade_date_data = pd.DataFrame(data = opens.index, columns = ['tradeDay'])
+        filePath = os.path.join(self.InputDir, 'trade_date_data' + '.csv')
+        trade_date_data.to_csv(filePath)
     
 if __name__ =='__main__':
     
     temp = DataProcess_Wind()
 #    temp.DataProcessForWind()
-    opens = temp.readWindCsv('open')
-    
-    
-    industry = pd.read_csv(r'F:\Quant\AlphaBT\TempData\WindData_bfq\sw_industry2.csv')
-    industry['code'] = industry['code'].apply(stockNameTrans)
-    industry = industry.set_index('code')
-    
-    opens = opens.index
-    
-    a = opens.join(industry)
+    temp.generateIndustry_temp()
+    temp.generateVectorData()
+#    opens = temp.readWindCsv('open')
+#    tradeDayList = opens.index
+#    opens = opens.T
+#    data = pd.DataFrame(data = [], index = opens.index)
+#    
+#    
+#    industry = pd.read_csv(r'F:\Quant\AlphaBT\TempData\WindData_bfq\sw_industry2.csv')
+#    industry['code'] = industry['code'].apply(stockNameTrans)
+#    industry = industry.set_index('code')
+#    
+#    
+#    
+#    for tradeDay in tradeDayList:
+#        print(tradeDay)
+#        industry.columns = [tradeDay]
+#        data = data.join(industry)
     
     
     
