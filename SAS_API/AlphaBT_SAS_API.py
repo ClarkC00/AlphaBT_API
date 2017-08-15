@@ -20,10 +20,10 @@ def stockNameTrans(stockNum):
         
     return stockCode
 
-infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\shsz300_idx_dwt.sas7bdat'
+infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\csi500_idx_dwt.sas7bdat'
 
 outputDir = r'F:\Quant\AlphaBT\DataBase3\Future'
-outfileName = 'if300'
+outfileName = 'ic500'
 
 start_date = '2011-01-04'
 end_date = '2017-08-10'
