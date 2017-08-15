@@ -18,18 +18,28 @@ class DataProcess_Wind(object):
         self.OutputDir = r'F:\Quant\AlphaBT\TempData'
         
         
-    def readWindCsv(self, name):
+    def readWindCsv(self, name, stockCode = None):
         
         def trimStr(data):
             return data[0:10]
         
         filePath = os.path.join(self.InputDir, name + '.csv')
-        
         df = pd.read_csv(filePath, index_col = 0)
-        
         df.index = df.index.map(trimStr)
         
+        if stockCode is None:
+            
+            print(np.size(df, 1))
+        
+        else:
+            
+            df = df.ix[:,stockCode['stockCode']]            
+            
+            print(np.size(df, 1))
+        
         return df
+    
+    
     
     def saveToCsv(self, df, name):
         
@@ -77,13 +87,21 @@ class DataProcess_Wind(object):
             
     def DataProcessForWind(self):
         
-        adjFactor = self.readWindCsv('adjfactor')
+        
+        filePath = os.path.join(temp.OutputDir, 'stockCode' + '.csv')
+        stockCode = pd.read_csv(filePath, index_col = 0)
+        
+        
+        
+        adjFactor = self.readWindCsv('adjfactor', stockCode)
         
         VarList_adj = ["open", "high", "low", "close", "pre_close", "vwap", "amt"]
         
         for varName in VarList_adj:
             print(varName)
-            df = self.readWindCsv(varName)
+            
+            df = self.readWindCsv(varName, stockCode)
+            adjFactor.index = df.index
             df = df*(adjFactor / np.array(adjFactor.max(axis = 0)))
             self.saveToCsv(df, varName)
             
@@ -92,17 +110,21 @@ class DataProcess_Wind(object):
         
         for varName in VarList:
             print(varName)
-            df = self.readWindCsv(varName)
+            df = self.readWindCsv(varName, stockCode)
             self.saveToCsv(df, varName)
             
             
-        VarList = ['pct_chg']
-        for varName in VarList:
-            print(varName)
-            df = self.readWindCsv(varName)/100
-            self.saveToCsv(df, 'returns')
+#        VarList = ['pct_chg']
+#        for varName in VarList:
+#            print(varName)
+#            df = self.readWindCsv(varName)/100
+#            self.saveToCsv(df, 'returns')
             
-            
+        close_df  = self.readWindCsv("close", stockCode)
+        
+        returns_df = close_df/close_df.shift(1) - 1
+        self.saveToCsv(returns_df, 'returns')
+        
             
         self.generateValid()
         
@@ -148,9 +170,9 @@ class DataProcess_Wind(object):
     
     def generateVectorData(self):
         
-        opens = self.readWindCsv('open')
+        opens = self.readWindCsv('close')
         
-        stockCode = pd.DataFrame(data =[], index = opens.index, columns = ['stockCode'])
+        stockCode = pd.DataFrame(data = opens.columns, columns = ['stockCode'])
         
         filePath = os.path.join(self.OutputDir, 'stockCode' + '.csv')
         stockCode.to_csv(filePath)
@@ -162,9 +184,10 @@ class DataProcess_Wind(object):
 if __name__ =='__main__':
     
     temp = DataProcess_Wind()
-#    temp.DataProcessForWind()
-    temp.generateIndustry_temp()
     temp.generateVectorData()
+    temp.DataProcessForWind()
+    temp.generateIndustry_temp()
+    
 #    opens = temp.readWindCsv('open')
 #    tradeDayList = opens.index
 #    opens = opens.T
@@ -182,9 +205,11 @@ if __name__ =='__main__':
 #        industry.columns = [tradeDay]
 #        data = data.join(industry)
     
+    opens = temp.readWindCsv('open')
+    filePath = os.path.join(temp.OutputDir, 'stockCode' + '.csv')
+    stockCode = pd.read_csv(filePath, index_col = 0)
     
-    
-    
+    a = opens.ix[:,stockCode['stockCode']]
     
     
     

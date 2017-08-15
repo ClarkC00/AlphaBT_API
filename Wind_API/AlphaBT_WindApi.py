@@ -24,6 +24,9 @@ class AlphaBT_WindApi(object):
                                                                  
     def getWindHistData(self):
         
+        def trimStr(data):
+            return data[0:10]
+        
         curr_date = self.getCurrentTime
         
         start_date = '2017-01-01'
@@ -62,6 +65,9 @@ class AlphaBT_WindApi(object):
 
             fileName = var + '.csv'
             filePath = os.path.join(self.OutputDir, fileName)
+            
+            data_df.index = data_df.index.map(trimStr)
+            
             data_df.to_csv(filePath, header = True)
             
     def getWindSingleData(self, varName, start_date, end_date, stockCodeList):
