@@ -25,6 +25,9 @@ class AlphaBT_WindApi(object):
     def getWindHistData(self):
         
         def trimStr(data):
+            
+            data = str(data)
+            
             return data[0:10]
         
         curr_date = self.getCurrentTime
@@ -44,13 +47,14 @@ class AlphaBT_WindApi(object):
 #                   'rel_ipo_chg','rel_ipo_pct_chg','trade_status','susp_reason',
 #                   'close3']
 #        self.getWindSingleData('adjfactor', start_date, end_date, stockCodeList)
-        varList = ['adjfactor']
+#        varList = ['adjfactor']
+        varList = ["share_totaltradable"]
         
         for var in varList:
             print(var)
             data_df = None
             
-            for iYear in range(2010,2017+1):
+            for iYear in range(2011,2017+1):
                 time.sleep(5)
                 print(iYear)
                 start_date = str(iYear) + '-01-01'
@@ -69,6 +73,7 @@ class AlphaBT_WindApi(object):
             data_df.index = data_df.index.map(trimStr)
             
             data_df.to_csv(filePath, header = True)
+            
             
     def getWindSingleData(self, varName, start_date, end_date, stockCodeList):
         

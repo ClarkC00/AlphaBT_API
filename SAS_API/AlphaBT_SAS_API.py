@@ -19,11 +19,21 @@ def stockNameTrans(stockNum):
         stockCode = stockNumStr + '.SZ'
         
     return stockCode
+# =============================================================================
+# main script
+# =============================================================================
 
-infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\csi500_idx_dwt.sas7bdat'
+#infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\csi500_idx_dwt.sas7bdat'
+#outfileName = 'ic500'
+
+#infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\shsz300_idx_dwt.sas7bdat'
+#outfileName = 'if300'
+
+infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\sh50_idx_dwt.sas7bdat'
+outfileName = 'ih50'
 
 outputDir = r'F:\Quant\AlphaBT\DataBase3\Future'
-outfileName = 'ic500'
+
 
 start_date = '2011-01-04'
 end_date = '2017-08-10'
@@ -49,7 +59,7 @@ valid[:] = np.nan
 
 futureValid = pd.DataFrame(data = [], index = valid.T.index)
 
-futureValid = futureValid.join(df.T, how = 'outer')
+futureValid = futureValid.join(df.T, how = 'left')
 
 futureValid = futureValid.T
 

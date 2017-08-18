@@ -184,9 +184,9 @@ class DataProcess_Wind(object):
 if __name__ =='__main__':
     
     temp = DataProcess_Wind()
-    temp.generateVectorData()
-    temp.DataProcessForWind()
-    temp.generateIndustry_temp()
+#    temp.generateVectorData()
+#    temp.DataProcessForWind()
+#    temp.generateIndustry_temp()
     
 #    opens = temp.readWindCsv('open')
 #    tradeDayList = opens.index
@@ -205,12 +205,15 @@ if __name__ =='__main__':
 #        industry.columns = [tradeDay]
 #        data = data.join(industry)
     
-    opens = temp.readWindCsv('open')
+# =============================================================================
+#     trans data for single var
+# =============================================================================
+    var = temp.readWindCsv('free_turn')
     filePath = os.path.join(temp.OutputDir, 'stockCode' + '.csv')
     stockCode = pd.read_csv(filePath, index_col = 0)
     
-    a = opens.ix[:,stockCode['stockCode']]
-    
+    var = var.ix[:,stockCode['stockCode']]
+    var.to_csv('free_turn.csv', header = True)
     
     
     
