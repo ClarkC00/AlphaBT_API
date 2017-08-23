@@ -50,7 +50,7 @@ class DataProcess_Wind(object):
     
     def generateValid(self):
         
-        def calValid(volume ,windowSize, universe):
+        def calValid(volume ,windowSize, universe):            
             
             volume_mv = volume.rolling(window=windowSize,center=False).mean()
             
