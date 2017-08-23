@@ -8,6 +8,8 @@ import os
 import pandas as pd
 import datetime,time
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 class DataProcess_Wind(object):
     
@@ -15,10 +17,10 @@ class DataProcess_Wind(object):
     def __init__(self):
         # change this path
         self.InputDir = r'F:\Quant\AlphaBT\TempData\WindData_bfq'
-        self.OutputDir = r'F:\Quant\AlphaBT\TempData'
+        self.OutputDir = r'F:\Quant\AlphaBT\TempData\wind_data_20170815'
         
         
-    def readWindCsv(self, name, stockCode = None):
+    def readWindCsv(self, name, stockCode = None, tradeDay = None):
         
         def trimStr(data):
             return data[0:10]
@@ -27,13 +29,14 @@ class DataProcess_Wind(object):
         df = pd.read_csv(filePath, index_col = 0)
         df.index = df.index.map(trimStr)
         
-        if stockCode is None:
+        if (stockCode is None) & (tradeDay is None):
             
             print(np.size(df, 1))
         
         else:
             
-            df = df.ix[:,stockCode['stockCode']]            
+            df.index = tradeDay['tradeDay']
+            df = df.ix[tradeDay['tradeDay'], stockCode['stockCode']]            
             
             print(np.size(df, 1))
         
@@ -91,42 +94,53 @@ class DataProcess_Wind(object):
         filePath = os.path.join(temp.OutputDir, 'stockCode' + '.csv')
         stockCode = pd.read_csv(filePath, index_col = 0)
         
+        filePath = os.path.join(temp.OutputDir, 'trade_date_data' + '.csv')
+        tradeDay = pd.read_csv(filePath, index_col = 0)
+        
+        adjFactor = self.readWindCsv('adjfactor', stockCode, tradeDay)
         
         
-        adjFactor = self.readWindCsv('adjfactor', stockCode)
+        # need adjfactor to adjust
         
         VarList_adj = ["open", "high", "low", "close", "pre_close", "vwap", "amt"]
         
         for varName in VarList_adj:
+            
             print(varName)
             
-            df = self.readWindCsv(varName, stockCode)
+            df = self.readWindCsv(varName, stockCode, tradeDay)
             adjFactor.index = df.index
             df = df*(adjFactor / np.array(adjFactor.max(axis = 0)))
             self.saveToCsv(df, varName)
             
+            self.checkDataValid(varName)
             
-        VarList = ["dealnum", "volume"]
+        # not need adjfactors    
+        VarList = ["dealnum", "volume","free_turn"]
         
         for varName in VarList:
-            print(varName)
-            df = self.readWindCsv(varName, stockCode)
-            self.saveToCsv(df, varName)
             
+            print(varName)
+            
+            df = self.readWindCsv(varName, stockCode, tradeDay)
+            self.saveToCsv(df, varName)
+            self.checkDataValid(varName)
+        
+        
+        # calcualte returns
             
 #        VarList = ['pct_chg']
 #        for varName in VarList:
 #            print(varName)
 #            df = self.readWindCsv(varName)/100
-#            self.saveToCsv(df, 'returns')
-            
-        close_df  = self.readWindCsv("close", stockCode)
+#            self.saveToCsv(df, 'returns')   
+        
+        
+        close_df  = self.readWindCsv("close", stockCode, tradeDay)
         
         returns_df = close_df/close_df.shift(1) - 1
         self.saveToCsv(returns_df, 'returns')
-        
-            
-        self.generateValid()
+        self.checkDataValid('returns')    
         
     def generateIndustry_temp(self):
         
@@ -180,13 +194,45 @@ class DataProcess_Wind(object):
         trade_date_data = pd.DataFrame(data = opens.index, columns = ['tradeDay'])
         filePath = os.path.join(self.OutputDir, 'trade_date_data' + '.csv')
         trade_date_data.to_csv(filePath)
+        
+    def generate_trade_date_data(self):
+        
+        opens = self.readWindCsv('open')
+        
+        trade_date_data = pd.DataFrame(data = opens.index, columns = ['tradeDay'])
+        filePath = os.path.join(self.OutputDir, 'trade_date_data' + '.csv')
+        trade_date_data.to_csv(filePath)
+        
+        
+        
+    def checkDataValid(self, fileName):
+        
+        path = os.path.join(self.OutputDir, fileName + '.csv')
+        df = pd.read_csv(path, index_col = 0)
+        
+        #plot
+        plt.figure(1, figsize=(10, 3))
+        
+        df[df == 0] = np.nan
+        
+        dataCoverage = df.count(axis = 1)
+        
+        dataCoverage.plot(grid = True, title = fileName)
+        
+        plt.show()
+        
+        return dataCoverage
     
 if __name__ =='__main__':
     
+    
     temp = DataProcess_Wind()
-#    temp.generateVectorData()
-#    temp.DataProcessForWind()
-#    temp.generateIndustry_temp()
+    temp.generate_trade_date_data()
+    temp.DataProcessForWind()
+    
+    
+    
+    temp.generateIndustry_temp()
     
 #    opens = temp.readWindCsv('open')
 #    tradeDayList = opens.index
@@ -208,15 +254,22 @@ if __name__ =='__main__':
 # =============================================================================
 #     trans data for single var
 # =============================================================================
-    var = temp.readWindCsv('free_turn')
-    filePath = os.path.join(temp.OutputDir, 'stockCode' + '.csv')
-    stockCode = pd.read_csv(filePath, index_col = 0)
+#    var = temp.readWindCsv('free_turn')
+#    filePath = os.path.join(temp.OutputDir, 'stockCode' + '.csv')
+#    stockCode = pd.read_csv(filePath, index_col = 0)
+#    
+#    var = var.ix[:,stockCode['stockCode']]
+#    var.to_csv('free_turn.csv', header = True)
     
-    var = var.ix[:,stockCode['stockCode']]
-    var.to_csv('free_turn.csv', header = True)
-    
-    
-    
+# =============================================================================
+#     checkout single var valid
+# =============================================================================
+#    temp.checkDataValid('open')
+#    temp.checkDataValid('high')
+#    temp.checkDataValid('low')
+    ss= temp.checkDataValid('volume')
+#    
+#    
     
     
     

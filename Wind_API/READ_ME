@@ -5,4 +5,6 @@
  Price Volume Data for Equity
  ==============================================================================
 
-pre_close : 前收盘价
+open：
+close ：当天的收盘价(wind自动向后填充nan)
+pre_close : 前1天的收盘价
