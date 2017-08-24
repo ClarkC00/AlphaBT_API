@@ -12,7 +12,10 @@ import datetime,time
 class AlphaBT_WindApi(object):
     
     def __init__(self):
+        
+        # wind api start
         w.start()
+        
         # change this path
         self.OutputDir = r'F:\Quant\AlphaBT\TempData\WindData_bfq'
         

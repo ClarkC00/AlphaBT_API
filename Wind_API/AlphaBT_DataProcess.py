@@ -140,8 +140,9 @@ class DataProcess_Wind(object):
         
         returns_df = close_df/close_df.shift(1) - 1
         self.saveToCsv(returns_df, 'returns')
-        self.checkDataValid('returns')    
+        self.checkDataValid('returns')
         
+    
     def generateIndustry_temp(self):
         
         
@@ -222,6 +223,10 @@ class DataProcess_Wind(object):
         plt.show()
         
         return dataCoverage
+    
+    def generateIndustry(self):
+        
+        path = os.
     
 if __name__ =='__main__':
     
