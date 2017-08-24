@@ -30,9 +30,9 @@ class AlphaBT_WindApi(object):
         self.startDateStr = '2011-01-01'
         self.endDateStr = '2017-08-15'
         
-    def getCurrentTime(self):
-        # 获取当前时间
-        return time.strftime('%Y-%m-%d', time.localtime(time.time))
+#    def getCurrentTime(self):
+#        # 获取当前时间
+#        return time.strftime('%Y-%m-%d', time.localtime(time.time))
     
 # =============================================================================
 # get tradeday list and save tradeday list
@@ -167,7 +167,7 @@ class AlphaBT_WindApi(object):
             data_df.to_csv(filePath, header = True)
             
 # =============================================================================
-#     get all 4 industry files
+#  get all 4 industry files
 # =============================================================================
     def getIndustryData(self):
         

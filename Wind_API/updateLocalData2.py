@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 """
+Created on Thu Aug 24 15:40:28 2017
+
+@author: chenxi
+"""
+# -*- coding: utf-8 -*-
+"""
 Created on Mon Aug 14 10:22:00 2017
 
 @author: chenxi
@@ -289,3 +295,4 @@ if __name__ =='__main__':
     
     
     
+
