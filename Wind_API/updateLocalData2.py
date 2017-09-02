@@ -75,6 +75,8 @@ class DataProcess_Wind(object):
         filePath = os.path.join(self.OutputDir, name + '.csv')
         
         df.to_csv(filePath, header = True)
+        
+#        df.to_hdf
     
 # =============================================================================
 #     
@@ -194,7 +196,7 @@ class DataProcess_Wind(object):
             
             var = self.readWindCsv(varName, self.stockCode, self.tradeDay)
             
-            var[var == np.nan] = -1
+            var = var.fillna(-1)
             
             self.saveToCsv(var, varName)
             
@@ -235,9 +237,9 @@ if __name__ =='__main__':
 # =============================================================================
 #   batch processing
 # =============================================================================
-    temp.generate_data_matrix()    
+#    temp.generate_data_matrix()    
     temp.generate_industry_matrix(['sector', 'industry', 'subindustry'])    
-    temp.generate_valid_matirx()
+#    temp.generate_valid_matirx()
     
     
 # =============================================================================

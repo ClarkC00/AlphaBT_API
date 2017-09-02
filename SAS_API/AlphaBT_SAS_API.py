@@ -26,13 +26,13 @@ def stockNameTrans(stockNum):
 #infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\csi500_idx_dwt.sas7bdat'
 #outfileName = 'ic500'
 
-#infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\shsz300_idx_dwt.sas7bdat'
-#outfileName = 'if300'
+infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\shsz300_idx_dwt.sas7bdat'
+outfileName = 'if300'
 
-infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\sh50_idx_dwt.sas7bdat'
-outfileName = 'ih50'
+#infile = r'F:\Quant\AlphaBT\DataBase3\Future\Future_SAS_files\sh50_idx_dwt.sas7bdat'
+#outfileName = 'ih50'
 
-outputDir = r'F:\Quant\AlphaBT\DataBase3\Future'
+outputDir = r'F:\Quant\AlphaBT\DataBase3_1\Future'
 
 
 start_date = '2011-01-04'
@@ -53,7 +53,7 @@ df=df.pivot_table(index='enddt',columns='stkcd',values='standard_wt', aggfunc=np
 
 
 
-validFile = r'F:\Quant\AlphaBT\DataBase3\basedata\TOP50.csv'
+validFile = r'F:\Quant\AlphaBT\DataBase3_1\basedata\TOP50.csv'
 valid = pd.read_csv(validFile, index_col = 0)
 valid[:] = np.nan
 
