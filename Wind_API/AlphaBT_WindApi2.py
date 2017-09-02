@@ -28,16 +28,15 @@ class AlphaBT_WindApi(object):
         
         
         self.startDateStr = '2011-01-01'
-        self.endDateStr = '2017-08-15'
+        self.endDateStr = '2017-08-10'
         
-#    def getCurrentTime(self):
-#        # 获取当前时间
-#        return time.strftime('%Y-%m-%d', time.localtime(time.time))
-    
+        self.get_StockList(saveOrNote=True)
+        self.get_Trade_Day_data(saveOrNote=True)
+        
 # =============================================================================
 # get tradeday list and save tradeday list
 # =============================================================================
-    def getTradeDayHist(self, saveOrNote = False):
+    def get_Trade_Day_data(self, saveOrNote = False):
         
         def dateTimeToStr(inDateTime):
             
@@ -57,7 +56,7 @@ class AlphaBT_WindApi(object):
             
             if saveOrNote is True:
                 
-                path = os.path.join(self.OutputDir, 'tradyDayList.csv')
+                path = os.path.join(self.OutputDir, 'tradeDayList.csv')
                 tradeDayList.to_csv(path, header = True)
                 
             else :  
@@ -70,12 +69,10 @@ class AlphaBT_WindApi(object):
             
             self.tradeDayList = None
 
-
-            
 # =============================================================================
 # get current stock list 
 # =============================================================================    
-    def getStockList(self, saveOrNote = False):
+    def get_StockList(self, saveOrNote = False):
         
         wData= w.wset("sectorconstituent","date="+ self.endDateStr +";sectorid=a001010100000000; field=wind_code")
         
@@ -117,6 +114,8 @@ class AlphaBT_WindApi(object):
 
         data_df = pd.DataFrame(data,index=stockCodeList,columns=temp.Times).T
         
+        data_df = self.trim_data_matrix(data_df)
+        
         return data_df
     
 # =============================================================================
@@ -124,14 +123,8 @@ class AlphaBT_WindApi(object):
 # =============================================================================
     def getHistData(self, varList):
         
-        def trimStr(data):
-            
-            data = str(data)
-            
-            return data[0:10]
-        
-        startYearNum = int(self.startDateStr[0:5])
-        endYearNum = int(self.endDateStr[0:5])
+        startYearNum = int(self.startDateStr[0:4])
+        endYearNum = int(self.endDateStr[0:4])
         
         for var in varList:
             
@@ -162,38 +155,34 @@ class AlphaBT_WindApi(object):
             fileName = var + '.csv'
             filePath = os.path.join(self.OutputDir, fileName)
             
-            data_df.index = self.tradeDayList
+            data_df = self.trim_data_matrix(data_df)
             
             data_df.to_csv(filePath, header = True)
             
 # =============================================================================
 #  get all 4 industry files
 # =============================================================================
-    def getIndustryData(self):
+    def getIndustryData(self, varList = ["sector", "industry", "subindustry", "miniindustry"]):
         
-        def trimStr(data):
-            
-            data = str(data)
-            
-            return data[0:10]
-        
-        varList = ["sector", "industry", "subindustry", "miniindustry"]
-        
-        startYearNum = int(self.startDateStr[0:5])
-        endYearNum = int(self.endDateStr[0:5])
+        startYearNum = int(self.startDateStr[0:4])
+        endYearNum = int(self.endDateStr[0:4])
         
         for var in varList:
+            
             print(var)
+            
             data_df = None
             
             for iYear in range(startYearNum, endYearNum + 1):
                 
                 time.sleep(5)
                 
-                print(iYear)
+                
                 
                 start_date = max(str(iYear) + '-01-01', self.startDateStr)
                 end_date = min(str(iYear) + '-12-31', self.endDateStr)
+                
+                print(start_date + '...' + end_date)
                 
                 df_temp = self.getWindIindustry(var, start_date, end_date, self.stockList_ls)
                 
@@ -206,12 +195,14 @@ class AlphaBT_WindApi(object):
                     data_df = pd.concat([data_df,df_temp])
                         
 
+            data_df = self.trim_data_matrix(data_df)
+            
             fileName = var + '.csv'
             filePath = os.path.join(self.OutputDir, fileName)
             
-            data_df.index = self.tradeDayList
+            data_df.to_csv(filePath, header = True)  
             
-            data_df.to_csv(filePath, header = True)    
+            
 # =============================================================================
 #     sub function for get industry function
 # =============================================================================
@@ -239,21 +230,38 @@ class AlphaBT_WindApi(object):
         data_df = pd.DataFrame(data,index=stockCodeList,columns=temp.Times).T
         
         return data_df
-
+# =============================================================================
+# trim data
+# =============================================================================
+    def trim_data_matrix(self, df):
+                
+        def dateTimeToStr(inDateTime):
+            
+            return datetime.datetime.strftime(inDateTime, '%Y-%m-%d')
+        
+        df.index = pd.DataFrame(df.index)[0].apply(dateTimeToStr)
+        
+#        df = df.ix[self.tradeDayList['tradeDay']]
+        
+        return df
+        
+        
+        
+        
+        
+        
 # =============================================================================
 #  data processing for alphaBT
 # =============================================================================
-    
-    
 if __name__ =='__main__':
 
     temp = AlphaBT_WindApi()
     
-    temp.getTradeDayHist()
+#    temp.get_Trade_Day_data(saveOrNote=True)
     
-    temp.getStockList()
+#    temp.get_StockList(saveOrNote=True)
     
-    temp.getIndustryData()
+    temp.getIndustryData(['industry'])
     
 #        varList = ['open', 'high', 'low', 'close']
 #                   'pre_close','open','high','low','close','volume','amt', 'dealnum',
@@ -265,6 +273,6 @@ if __name__ =='__main__':
 #        varList = ['adjfactor']
         # "trade_status,susp_reason,mf_amt,mf_vol,mf_amt_ratio,mf_vol_ratio,mf_amt_close,mf_amt_open,ev,mkt_cap_ard,pe_ttm,val_pe_deducted_ttm,pe_lyr,pb_lf,pb_mrq,ps_ttm"
     
-    varList = ["mf_amt"]    
+#    varList = ["mf_amt"]    
     
-    temp.getHistData(varList)
+#    temp.getHistData('TOP1500')
